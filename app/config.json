@@ -1,0 +1,111 @@
+{
+  "type": "array",
+  "properties": [{
+    "key": "cluster",
+    "description": "cluster properties",
+    "type": "array",
+    "properties": [{
+      "key": "name",
+      "type": "string",
+      "label": "Name",
+      "description": "The name of the Starter service",
+      "default": "Starter",
+      "required": "no"
+    }, {
+      "key": "description",
+      "type": "string",
+      "label": "Description",
+      "description": "The description of the Starter service",
+      "default": "",
+      "required": "no"
+    }, {
+      "key": "vxnet",
+      "label": "VxNet",
+      "description": "Choose a vxnet to join",
+      "type": "string",
+      "default": "",
+      "required": "yes"
+    }, {
+      "key": "starter",
+      "label": "Starter Node",
+      "description": "Properties for Starter nodes",
+      "type": "array",
+      "properties": [{
+        "key": "cpu",
+        "label": "CPU",
+        "description": "CPUs of each node",
+        "type": "integer",
+        "default": 1,
+        "range": [1, 2, 4, 8, 16],
+        "required": "yes"
+      }, {
+        "key": "memory",
+        "label": "Memory",
+        "description": "Memory of each node (in MiB)",
+        "type": "integer",
+        "default": 2048,
+        "range": [1024, 2048, 4096, 8192, 16384, 32768, 49152],
+        "required": "yes"
+      }, {
+        "key": "instance_class",
+        "label": "Instance Class",
+        "description": "",
+        "type": "integer",
+        "default": 101,
+        "range": [101, 202],
+        "required": "yes"
+      }, {
+        "key": "count",
+        "label": "Node Count",
+        "description": "Number of nodes",
+        "type": "integer",
+        "default": 3,
+        "range": [1, 3, 5, 7, 9],
+        "required": "yes"
+      }, {
+        "key": "volume_size",
+        "label": "Volume Size",
+        "description": "The volume size for each node",
+        "type": "integer",
+        "default": 10,
+        "required": "yes"
+      }]
+    }]
+  }, {
+    "key": "env",
+    "description": "Application configuration properties",
+    "type": "array",
+    "properties": [{
+      "key": "starter",
+      "description": "The role configuration properties of the application",
+      "type": "array",
+      "properties": [{
+        "key": "auth.enabled",
+        "label": "Auth Enabled",
+        "description": "If enabled authentication",
+        "type": "boolean",
+        "changeable": true,
+        "default": false,
+        "required": "no"
+      }, {
+        "key": "auth.username",
+        "label": "Username",
+        "description": "The username of the admin web console, can contain uppercase & lowercase letters, digits with 4-12 characters in total",
+        "type": "string",
+        "changeable": true,
+        "default": "admin",
+        "pattern": "^[a-z][a-z0-9_-]{3,32}",
+        "required": "no"
+      }, {
+        "key": "auth.password",
+        "label": "Password",
+        "description": "The password of the admin web console, can contain uppercase & lowercase letters, digits, and the following 10 special characters !@#$%^&*() with 4-32 characters in total",
+        "type": "password",
+        "changeable": true,
+        "default": "admin",
+        "pattern": "^[A-Za-z0-9!@#$%^&*()]{4,32}$",
+        "required": "no"
+      }]
+    }]
+  }]
+}

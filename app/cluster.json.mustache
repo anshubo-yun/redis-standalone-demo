@@ -1,0 +1,68 @@
+{
+  "name": {{cluster.name}},
+  "description": {{cluster.description}},
+  "vxnet": {{cluster.vxnet}},
+  "multi_zone_policy": "round_robin",
+  "backup_policy": "device",
+  "incremental_backup_supported": true,
+  "nodes": [{
+    "role": "starter",
+    "container": {
+      "type": "kvm",
+      "zone": "pek3",
+      "image": "img-"
+    },
+    "count": {{cluster.starter.count}},
+    "cpu": {{cluster.starter.cpu}},
+    "memory": {{cluster.starter.memory}},
+    "instance_class": {{cluster.starter.instance_class}},
+    "volume": {
+      "size": {{cluster.starter.volume_size}}
+    },
+    "services": {
+      "start": {
+        "cmd": "appctl start"
+      },
+      "stop": {
+        "cmd": "appctl stop"
+      }
+    },
+    "vertical_scaling_policy": "sequential",
+    "env": {
+      "auth.enabled": {{env.starter.auth.enabled}},
+      "auth.username": {{env.starter.auth.username}},
+      "auth.password": {{env.starter.auth.password}}
+    }
+  }],
+  "endpoints": {
+    "client": {
+      "port": 80,
+      "protocol": "tcp"
+    }
+  },
+  "health_check": {
+    "enable": true,
+    "interval_sec": 60,
+    "timeout_sec": 10,
+    "action_timeout_sec": 30,
+    "healthy_threshold": 2,
+    "unhealthy_threshold": 2,
+    "check_cmd": "appctl check",
+    "action_cmd": "appctl revive"
+  },
+  "monitor": {
+    "enable": true,
+    "cmd": "appctl measure",
+    "items": {
+      "connections": {
+        "unit": "count",
+        "value_type": "int",
+        "statistics_type": "latest",
+        "scale_factor_when_display": 1
+      }
+    },
+    "display": ["connections"],
+    "alarm": ["connections"]
+  },
+  "advanced_actions": ["change_vxnet", "scale_horizontal"]
+}

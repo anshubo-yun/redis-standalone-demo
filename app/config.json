@@ -36,7 +36,7 @@
         "description": "CPUs of each node",
         "type": "integer",
         "default": 1,
-        "range": [1, 2, 4, 8, 16],
+        "range": [1, 2, 4],
         "required": "yes"
       }, {
         "key": "memory",
@@ -44,7 +44,7 @@
         "description": "Memory of each node (in MiB)",
         "type": "integer",
         "default": 2048,
-        "range": [1024, 2048, 4096, 8192, 16384, 32768, 49152],
+        "range": [1024, 2048, 4096],
         "required": "yes"
       }, {
         "key": "instance_class",
@@ -76,36 +76,29 @@
     "description": "Application configuration properties",
     "type": "array",
     "properties": [{
-      "key": "starter",
+      "key": "redis",
       "description": "The role configuration properties of the application",
       "type": "array",
       "properties": [{
-        "key": "auth.enabled",
-        "label": "Auth Enabled",
-        "description": "If enabled authentication",
-        "type": "boolean",
-        "changeable": true,
-        "default": false,
-        "required": "no"
+        "key": "port",
+        "label": "port",
+        "description": "port_label",
+        "type": "integer",
+        "min": 1,
+        "max": 65535,
+        "default": 6379,
+        "required": "yes"
       }, {
-        "key": "auth.username",
-        "label": "Username",
-        "description": "The username of the admin web console, can contain uppercase & lowercase letters, digits with 4-12 characters in total",
-        "type": "string",
-        "changeable": true,
-        "default": "admin",
-        "pattern": "^[a-z][a-z0-9_-]{3,32}",
-        "required": "no"
-      }, {
-        "key": "auth.password",
-        "label": "Password",
-        "description": "The password of the admin web console, can contain uppercase & lowercase letters, digits, and the following 10 special characters !@#$%^&*() with 4-32 characters in total",
-        "type": "password",
-        "changeable": true,
-        "default": "admin",
-        "pattern": "^[A-Za-z0-9!@#$%^&*()]{4,32}$",
-        "required": "no"
-      }]
+        "key": "standalone_port",
+        "label": "port",
+        "description": "standalone_port_label",
+        "type": "integer",
+        "min": 1,
+        "max": 65535,
+        "default": 26379,
+        "required": "yes"
+      }
+    ]
     }]
   }]
 }

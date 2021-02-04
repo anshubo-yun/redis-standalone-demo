@@ -1,4 +1,6 @@
 {
   "Participant Node": "Starter 节点",
-  "connections": "连接数"
+  "connections": "连接数",
+  "redis_port_label": "redis监听端口",
+  "standalone_port_label": "standalone监听端口"
 }

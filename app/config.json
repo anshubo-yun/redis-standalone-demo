@@ -9,7 +9,7 @@
       "type": "string",
       "label": "Name",
       "description": "The name of the Starter service",
-      "default": "Starter",
+      "default": "redis-standalone-demo",
       "required": "no"
     }, {
       "key": "description",

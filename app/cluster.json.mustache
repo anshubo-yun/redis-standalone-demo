@@ -10,7 +10,7 @@
     "container": {
       "type": "kvm",
       "zone": "pek3",
-      "image": "img-oehhtx3z"
+      "image": "img-92khrq3t"
     },
     "count": {{cluster.redis.count}},
     "cpu": {{cluster.redis.cpu}},
@@ -23,11 +23,7 @@
       "init": { "cmd": "appctl initNode" },
       "start": { "cmd": "appctl start" },
       "stop": { "cmd": "appctl stop" },
-      "check_cmd": { "cmd": "appctl check" },
-      "restart": { "cmd": "appctl restart" },
-      "check_cmd": { "cmd": "appctl check" }
-      "scale_in": { "pre_check": "appctl preScaleIn", "nodes_to_execute_on": 1, "cmd": "appctl scaleIn" },
-      "destroy": { "allow_force": false, "cmd": "appctl destroy" },
+      "restart": { "cmd": "appctl restart" }
     },
     "vertical_scaling_policy": "sequential",
     "env": {

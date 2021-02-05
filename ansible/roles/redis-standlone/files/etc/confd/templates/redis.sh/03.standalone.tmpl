@@ -1,0 +1,12 @@
+flush /data/sentinel/conf/sentinel.conf << SENTINEL_CONF_EOF
+port 26379
+daemonize no
+pidfile /data/sentinel/run/sentinel.pid
+logfile ""
+dir /data/sentinel/tmp
+sentinel monitor mymaster 127.0.0.1 6379 2
+sentinel down-after-milliseconds mymaster 30000
+sentinel parallel-syncs mymaster 1
+sentinel failover-timeout mymaster 180000
+sentinel deny-scripts-reconfig yes
+SENTINEL_CONF_EOF

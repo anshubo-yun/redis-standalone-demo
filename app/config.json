@@ -26,7 +26,7 @@
       "default": "",
       "required": "yes"
     }, {
-      "key": "starter",
+      "key": "redis",
       "label": "Starter Node",
       "description": "Properties for Starter nodes",
       "type": "array",
@@ -90,7 +90,7 @@
         "required": "yes"
       }, {
         "key": "standalone_port",
-        "label": "port",
+        "label": "standalone_port",
         "description": "standalone_port_label",
         "type": "integer",
         "min": 1,

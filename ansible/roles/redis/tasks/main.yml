@@ -83,22 +83,7 @@
   loop_control:
     loop_var: file_name
 
-- name: install services
-  copy:
-    src: "{{ role_path }}/files/lib/systemd/system/"
-    dest: /lib/systemd/system/
 
-- name: mask services
-  systemd:
-    name: "{{ service_name }}"
-    enabled: no
-    masked: yes
-    state: stopped
-  loop:
-  - redis-server
-  - redis-sentinel
-  loop_control:
-    loop_var: service_name
 
 - name: add commands to PATH
   copy:

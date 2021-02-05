@@ -1,6 +1,6 @@
 [template]
-src = "redis.tmpl"
-dest = "/opt/app/current/bin/tmpl/redis.conf.sh"
+src = "redis.sh.tmpl"
+dest = "/opt/app/current/bin/tmpl/redis.sh"
 mode = "0700"
 keys = [
   "/",

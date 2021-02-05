@@ -1,6 +1,10 @@
+
+
 initNode() {
-  mkdir -p /data/redis/data
+  mkdir -p /data/redis/{data,conf,run}
+  mkdir -p /data/sentinel/{data,conf,run,tmp}
   chown -R redis.svc /data/redis
+  chown -R redis.svc /data/sentinel
   _initNode
 }
 

@@ -6,33 +6,33 @@
   "backup_policy": "device",
   "incremental_backup_supported": true,
   "nodes": [{
-    "role": "starter",
+    "role": "redis",
     "container": {
       "type": "kvm",
       "zone": "pek3",
-      "image": "img-"
+      "image": "img-oehhtx3z"
     },
-    "count": {{cluster.starter.count}},
-    "cpu": {{cluster.starter.cpu}},
-    "memory": {{cluster.starter.memory}},
-    "instance_class": {{cluster.starter.instance_class}},
+    "count": {{cluster.redis.count}},
+    "cpu": {{cluster.redis.cpu}},
+    "memory": {{cluster.redis.memory}},
+    "instance_class": {{cluster.redis.instance_class}},
     "volume": {
-      "size": {{cluster.starter.volume_size}}
+      "size": {{cluster.redis.volume_size}}
     },
     "services": {
-      "start": {
-        "cmd": "appctl start"
-      },
-      "stop": {
-        "cmd": "appctl stop"
-      }
+      "init": { "cmd": "appctl initNode" },
+      "start": { "cmd": "appctl start" },
+      "stop": { "cmd": "appctl stop" },
+      "check_cmd": { "cmd": "appctl check" },
+      "restart": { "cmd": "appctl restart" },
+      "check_cmd": { "cmd": "appctl check" }
+      "scale_in": { "pre_check": "appctl preScaleIn", "nodes_to_execute_on": 1, "cmd": "appctl scaleIn" },
+      "destroy": { "allow_force": false, "cmd": "appctl destroy" },
     },
     "vertical_scaling_policy": "sequential",
     "env": {
-      "port": {{env.starter.auth.enabled}},
-      "port": {{env.starter.auth.enabled}},
-      "auth.username": {{env.starter.auth.username}},
-      "auth.password": {{env.starter.auth.password}}
+      "port": {{env.redis.port}},
+      "standalone_port": {{env.redis.standalone_port}}
     }
   }],
   "endpoints": {

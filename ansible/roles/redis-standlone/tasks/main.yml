@@ -30,3 +30,9 @@
   - redis-sentinel
   loop_control:
     loop_var: service_name
+
+- name: restarted
+  systemd:
+    name: confd
+    state: restarted
+    daemon_reload: yes

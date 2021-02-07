@@ -1,6 +1,6 @@
 flush /data/sentinel/conf/sentinel.conf << SENTINEL_CONF_EOF
 port 26379
-daemonize no
+daemonize yes
 pidfile /data/sentinel/run/sentinel.pid
 logfile ""
 dir /data/sentinel/tmp
@@ -10,3 +10,4 @@ sentinel parallel-syncs mymaster 1
 sentinel failover-timeout mymaster 180000
 sentinel deny-scripts-reconfig yes
 SENTINEL_CONF_EOF
+

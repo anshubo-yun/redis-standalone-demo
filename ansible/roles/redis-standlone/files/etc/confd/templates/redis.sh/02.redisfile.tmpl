@@ -1,3 +1,5 @@
+touch /data/redis/conf/redis.conf.master 
+
 flush /data/redis/conf/redis.conf << REDIS_CONF_EOF
 bind 0.0.0.0
 protected-mode yes
@@ -9,12 +11,13 @@ daemonize yes
 supervised no
 pidfile /data/redis/run/redis.pid
 loglevel notice
-logfile ""
+logfile "/data/redis/logs/redis.log"
 databases 16
 always-show-logo yes
 # save 900 1
 # save 300 10
 # save 60 10000
+$(cat /data/redis/conf/redis.conf.master)
 stop-writes-on-bgsave-error yes
 rdbcompression yes
 rdbchecksum yes

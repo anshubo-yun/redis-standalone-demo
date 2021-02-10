@@ -10,7 +10,7 @@
     "container": {
       "type": "kvm",
       "zone": "pek3",
-      "image": "img-92khrq3t"
+      "image": "img-n6c9wabk"
     },
     "count": {{cluster.redis.count}},
     "cpu": {{cluster.redis.cpu}},
@@ -23,7 +23,8 @@
       "init": { "cmd": "appctl initNode" },
       "start": { "cmd": "appctl start" },
       "stop": { "cmd": "appctl stop" },
-      "restart": { "cmd": "appctl restart" }
+      "restart": { "cmd": "appctl restart" },
+      "destroy" :{ "cmd": "appctl destroy"}
     },
     "vertical_scaling_policy": "sequential",
     "env": {

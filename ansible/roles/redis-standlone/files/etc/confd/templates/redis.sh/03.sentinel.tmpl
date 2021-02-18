@@ -1,4 +1,5 @@
-touch /data/sentinel/conf/sentinel.conf
+
+quorum=$(expr $(cat /data/redis/data/node.list |wc -l) / 2 + 1 )
 
 flush /data/sentinel/conf/sentinel.conf << SENTINEL_CONF_EOF
 port 26379
@@ -6,15 +7,15 @@ daemonize yes
 pidfile /data/sentinel/run/sentinel.pid
 logfile "/data/sentinel/logs/sentinel.log"
 dir /data/sentinel/data
-$(cat /data/sentinel/conf/sentinel.conf.master )
+sentinel monitor {{ getv "/cluster/cluster_id" }} $(awk -F: '{print $2}' /data/cluster_master.sid) {{ getv "/env/standalone_port" }} $quorum 
 sentinel down-after-milliseconds {{ getv "/cluster/cluster_id" }} 30000
 sentinel parallel-syncs {{ getv "/cluster/cluster_id" }} 1
 sentinel failover-timeout {{ getv "/cluster/cluster_id" }} 180000
 sentinel deny-scripts-reconfig yes
 SENTINEL_CONF_EOF
 
-
-quorum=$(expr $(cat /data/redis/data/node.list |wc -l) / 2 + 1 )
 echo "SENTINEL set {{ getv "/cluster/cluster_id" }} quorum $quorum" |\
  /opt/redis/current/redis-cli -p {{ getv "/env/standalone_port" }}
+
+
  

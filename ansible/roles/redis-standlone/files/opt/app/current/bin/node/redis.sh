@@ -3,14 +3,14 @@ initNode() {
   mkdir -p /data/sentinel/{data,conf,run,logs}
   chown -R redis.svc /data/redis
   chown -R redis.svc /data/sentinel
-  execute updateConf
-  execute _initNode
+  # execute updateConf
+  if ! isClusterInitialized; then
+      ( [ "$MY_SID" == "1" ] && echo "0:$MY_IP" || awk -F: '$1==1' $LIST_NODES_File  ) > $CLUSTER_MASTER_FILE
+  fi
   execute _initCluster
+  execute _initNode
 }
 
-getNodeCount() {
-  wc -l $LIST_NODES_File
-}
 measure() {
   echo '{"connections": '$(netstat -ntp | awk -v ip="$MY_IP:$REDIS_PORT" '$6=="ESTABLISHED" && $5 == ip ' | wc -l)'}'
 }
@@ -23,64 +23,30 @@ killServer() {
   fi
 }
 
-getMyRole() {
-  /opt/redis/current/redis-cli -h 127.0.0.1 -p ${REDIS_PORT} info Replication |\
-  awk -F ':'  '$1 == "role" {print $2}'
+isMaster() {
+  local host=$([ -n "$1" ] && echo "$1" ||  echo "127.0.0.1" )
+  /opt/redis/current/redis-cli -h ${host} -p ${REDIS_PORT} info Replication |\
+  grep -wq "role:master"
 }
 
 updateConf() {
   # 更新".master"里集群相关配置
-  local nodeMaster=$(findMaster)
-  updateRedisConfMaster $nodeMaster
-  updateSentinelConfMaster $nodeMaster
+  # local nodeMaster=$(awk -v sid=$(findMaster) -F: '$1!=sid{pirnt $2}' $LIST_NODES_File )
+  findMaster
   /opt/app/current/bin/tmpl/redis.sh
-}
-
-updateRedisConfMaster() {
-  # 更新redis集群信息到".master"文件里
-  local masterHost=$1 quorum=$(expr $(echo $LIST_NODES | wc -w) / 2  + 1)
-  if [ -z "$masterHost" ]; then
-    > ${SENTINEL_CONF}.master
-  else
-    echo "slaveof $masterHost $REDIS_PORT" > ${REDIS_CONF}.master 
-  fi
-}
-
-updateSentinelConfMaster() {
-  # 更新Sentinel集群信息到".master"文件里
-  local masterHost=$1 quorum=$(expr $(echo $LIST_NODES | wc -w) / 2  + 1)
-  [ -z "$masterHost" ] && masterHost="$MY_IP "
-  echo "sentinel monitor $CLUSTER_ID $masterHost $REDIS_PORT $quorum" > ${SENTINEL_CONF}.master
 }
 
 
 findMaster() {
   # 用于寻找主节点使用
-  isClusterInitialized || [ "$MY_SID" == "1" ] && return 0
-  [ "$(getNodeCount)" == "1" ] && return 0
-  [ -f "${REDIS_CONF}.master" ] && [ ! -s "${REDIS_CONF}.master" ] && return 0
-  local info
-  for info in $LIST_NODES; do
-    local host=${info#*|}
-    if nc -nz -w 1 $host $REDIS_PORT; then
-      /opt/redis/current/redis-cli -h ${host} -p ${REDIS_PORT} info Replication > /tmp/infoRepl.tmp
-      local masterHost
-      if grep -wq "role:master" /tmp/infoRepl.tmp; then
-        masterHost="$host"
-      else
-        masterHost=$(awk -F: '$1 == "master_host" {print $2}' /tmp/infoRepl.tmp)
-      fi
-      [[ "$masterHost" == "$MY_IP" ]] && masterHost=""
-      echo -n $masterHost
-      /bin/rm /tmp/infoRepl.tmp -f
-      return 0
+  for info in $(awk -v sid=$MY_SID -F: '$1!=sid' $LIST_NODES_File); do
+    local msid=${info%:*} host=${info#*:}
+    if nc -nz -w 1 $host $REDIS_PORT && isMaster "$host"; then 
+      echo "$msid" > $CLUSTER_MASTER_FILE
+      break
     fi
   done
-  if ! isClusterInitialized && [ "$MY_SID" != "1" ] ; then
-    awk -F "|" '$1==1{print $2}' $LIST_NODES_File
-  else
-    return 1
-  fi
+  # cat $CLUSTER_MASTER_FILE
 }
 
 createHashConf() {
@@ -130,29 +96,28 @@ reload() {
 }
 
 waitNode() {
-  local ip NodesIPs=$(awk -v sid=$MY_SID -F "|" '$1 != sid{print $2}' $LIST_NODES_File)
+  local ip status
   while true
   do
-    local w="off"
-    for ip in $NodesIPs; do
+    status="off"
+    for ip in $(awk -v sid=$MY_SID -F: '$1 != sid{print $2}' $LIST_NODES_File); do
       # echo "NodesIPs $ip $REDIS_PORT"
       if nc -nz -w 1 $ip $REDIS_PORT ; then
-        w="on"
+        status="on"
         break
       fi
     done
-    [ "$1" == "$w" ] && break
+    [ "$1" == "$status" ] && break
     sleep 1
   done
-  echo ok
 }
 
 stop() {
   execute updateConf
-  [[ "$(getMyRole)" == "master"* ]] && waitNode off
+  isMaster && waitNode off
   execute _stop
 }
 
 destroy() {
-  [[ "$(getMyRole)" == "master"* ]] && /opt/redis/current/redis-cli -p ${SENTINEL_PORT} SENTINEL failover ${CLUSTER_ID}
+  isMaster && /opt/redis/current/redis-cli -p ${SENTINEL_PORT} SENTINEL failover ${CLUSTER_ID}
 }

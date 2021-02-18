@@ -1,2 +1,4 @@
 .DS_Store
 files/tmp/
+app/*.tar.gz
+app/*.zip

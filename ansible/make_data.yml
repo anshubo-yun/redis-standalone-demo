@@ -1,6 +1,6 @@
 ---
 - name: starter tasks
-  hosts: all
+  hosts: demo
   vars:
     target_env: "{{ lookup('env', 'target') }}"
   tasks:

@@ -1,4 +1,3 @@
-touch /data/redis/conf/redis.conf.master 
 
 flush /data/redis/conf/redis.conf << REDIS_CONF_EOF
 bind 0.0.0.0
@@ -17,7 +16,7 @@ always-show-logo yes
 # save 900 1
 # save 300 10
 # save 60 10000
-$(cat /data/redis/conf/redis.conf.master)
+$(awk -F: -v port={{ getv "/env/port" }} '$1!=0{print "slaveof "$2" "port}' /data/cluster_master.sid)
 stop-writes-on-bgsave-error yes
 rdbcompression yes
 rdbchecksum yes

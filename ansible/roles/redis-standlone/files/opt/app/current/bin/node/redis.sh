@@ -114,6 +114,7 @@ waitNode() {
 
 stop() {
   execute updateConf
+  echo "aaaaaaaaaaa"
   isMaster && waitNode off
   execute _stop
 }
